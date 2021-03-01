@@ -22,11 +22,12 @@ class Board:
     def render(self, screen):
         for row in range(self.height):
             for col in range(self.width):
-                pygame.draw.rect(screen, pygame.Color(self.colors[self.board[row][col]]), (self.left + (row * self.cell_size), self.top + (col * self.cell_size), self.cell_size, self.cell_size), 1)
+                pygame.draw.rect(screen, pygame.Color(self.colors[self.board[row][col]]), (self.left + (col * self.cell_size), self.top + (row * self.cell_size), self.cell_size, self.cell_size), 1)
 
     def interface(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
         print(cell)
+        self.set_cell_color(cell)
         # Дальше всё ограничивается только фантазией
 
     def get_cell(self, mouse_pos):
@@ -37,7 +38,12 @@ class Board:
                     upper_left[1] < mouse_pos[1] < upper_left[1] + self.cell_size:
                     # Возвращаю значение в виде (строка, столбец)
                     return row, col
-  
+    
+    def set_cell_color(self, cell):
+        if cell:
+            row, col = cell
+            self.board[row][col] += 1
+            self.board[row][col] %= len(self.colors)
 
 running = True
 size = 500, 500
