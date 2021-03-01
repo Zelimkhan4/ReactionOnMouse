@@ -10,8 +10,7 @@ class Board:
         self.top = top
         self.cell_size = cell_size
         # Cписок с цветами
-        self.colors = ['White', 'Red', 'Blue']
-        
+        self.colors = [pygame.Color(i) for i in ['White', 'Red', 'Blue']]
         self.board = [[0] * self.width for i in range(self.height)]
     
     def set_view(self, left, top, cell_size):
@@ -22,8 +21,18 @@ class Board:
     def render(self, screen):
         for row in range(self.height):
             for col in range(self.width):
-                pygame.draw.rect(screen, pygame.Color(self.colors[self.board[row][col]]), (self.left + (col * self.cell_size), self.top + (row * self.cell_size), self.cell_size, self.cell_size), 1)
 
+                rect = pygame.Rect(self.left + (col * self.cell_size), self.top + (row * self.cell_size), self.cell_size, self.cell_size)
+
+                # Рисую белую границу
+                pygame.draw.rect(screen, pygame.Color("white"), rect, 1)
+                
+                # Дорисовываю внутри разными цветами если они указаны
+                color = self.board[row][col]
+                if color:
+                    rect = pygame.Rect(self.left + (col * self.cell_size + 1), self.top + (row * self.cell_size + 1), self.cell_size - 2, self.cell_size - 2)
+                    pygame.draw.rect(screen, self.colors[self.board[row][col]], rect, 0)
+    
     def interface(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
         print(cell)
@@ -45,16 +54,18 @@ class Board:
             self.board[row][col] += 1
             self.board[row][col] %= len(self.colors)
 
-running = True
-size = 500, 500
-screen = pygame.display.set_mode(size)
-board = Board(15, 15, 10, 10, 25)
-while running:
-    for ev in pygame.event.get():
-        if ev.type == pygame.QUIT:
-            running = False
-        elif ev.type == pygame.MOUSEBUTTONDOWN:
-            board.interface(ev.pos)
-    screen.fill((0, 0, 0))
-    board.render(screen)
-    pygame.display.flip()
+
+if __name__ == '__main__':
+    running = True
+    size = 500, 500
+    screen = pygame.display.set_mode(size)
+    board = Board(15, 15, 10, 10, 25)
+    while running:
+        for ev in pygame.event.get():
+            if ev.type == pygame.QUIT:
+                running = False
+            elif ev.type == pygame.MOUSEBUTTONDOWN:
+                board.interface(ev.pos)
+        screen.fill((0, 0, 0))
+        board.render(screen)
+        pygame.display.flip()
